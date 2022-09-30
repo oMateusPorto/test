@@ -20,3 +20,5 @@ npm install
 npm start
 ```
 A aplicação irá abrir no http://localhost:300*/
+
+Para logar, basta digitar o nome, não sendo necessário password. 
