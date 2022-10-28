@@ -46,8 +46,6 @@ const StageProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
         } else{
             newStage(id)
         }
-        console.log(stage)
-        console.log(stages)
     }
     
     const newStage = (id:string) => {
