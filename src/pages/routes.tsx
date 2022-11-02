@@ -6,6 +6,7 @@ import Footer from "../components/footer";
 import PageNotFound from "../pages/notFound.tsx/pageNotFound";
 import Login from "../pages/login/login";
 import UserMaintenance from "../pages/maintenances";
+import Stages from "./stages/stages";
 
 function Router() {
     return (
@@ -15,6 +16,7 @@ function Router() {
                     <Routes>
                         <Route path="/" element={<Login />} />
                         <Route path="/UserMaintenance" element={<UserMaintenance />} />
+                        <Route path="/Stages" element={<Stages />} />
                         <Route path="*" element={<PageNotFound />} />
                     </Routes>
                     <Footer />

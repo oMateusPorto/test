@@ -7,7 +7,7 @@ export interface IStage {
     description: string;
     status: boolean;
     type: number;
-    value: { text: string, number: number, file: string };
+    value: any;
     createdAt: string,
 }
 
@@ -17,7 +17,7 @@ export const initialStage = {
     description: '',
     status: false,
     type: 0,
-    value: { text: '', number: 0, file: '' },
+    value: '',
     createdAt: Date()
 }
 
@@ -26,31 +26,33 @@ export type StageContextType = {
     stages: IStage[],
     setStage: (stage: IStage) => void,
     initialStage: IStage,
-    newStage:(id: string) => void,
-    updateStages:(stage: IStage) => void,
-    updateStatusStage:(stage: IStage) => void,
-    openStage: (id: string) =>void
+    newStage: (id: string) => void,
+    updateStages: (stage: IStage) => void,
+    updateStatusStage: (stage: IStage) => void,
+    openStage: (id: string) => void,
+    stagesOfMaintenance: IStage[]
 }
 
 export const StageContext = createContext<StageContextType | null>(null)
+StageContext.displayName = 'Stage'
 
 const StageProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-    const [stages, setStages] = useState<IStage[]>([])
-    
-    const [stage, setStage] = useState(initialStage)
 
-    const openStage = (id:string) => {
-        const stage = stages.filter(item => item.maintenanceId === id)
-        if(stage.length !== 0){
-            setStage(stage[0])
-        } else{
-            newStage(id)
-        }
+    const [stages, setStages] = useState<IStage[]>([])
+    const [stage, setStage] = useState(initialStage)
+    const [stagesOfMaintenance, setStagesOfMaintenance] = useState<IStage[]>([])
+
+    const openStage = (id: string) => {
+        const item = stages.filter(item => item.maintenanceId === id)
+        setStagesOfMaintenance(item)
     }
-    
-    const newStage = (id:string) => {
-        setStages([...stages, { ...initialStage, id: uuidv4(), maintenanceId:id }])
-        setStage(stage)
+
+    const newStage = (id: string) => {
+        const newStage:IStage[] = []
+        for(var i = 1; i <= 3; i++){
+            newStage.push({...stage, id: uuidv4(), maintenanceId: id, type: i})  
+        }
+        setStages([...stages, newStage[0], newStage[1], newStage[2]])
     }
 
     const updateStages = (stage: IStage) => {
@@ -58,7 +60,7 @@ const StageProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     }
 
     const updateStatusStage = (stage: IStage) => {
-        const up = {...stage, status: true }
+        const up = { ...stage, status: true }
         updateStages(up)
     }
 
@@ -70,7 +72,8 @@ const StageProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
         newStage,
         updateStages,
         updateStatusStage,
-        openStage
+        openStage,
+        stagesOfMaintenance
     }}>
         {children}
     </StageContext.Provider>

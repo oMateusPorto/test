@@ -29,6 +29,7 @@ export type MaintenanceContextType = {
 }
 
 export const MaintenanceContext = createContext<MaintenanceContextType | null>(null)
+MaintenanceContext.displayName = 'Maintenance'
 
 const MaintenanceProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     const [maintenances, setMaintenances] = useState<IMaintenance[]>([])
@@ -41,7 +42,7 @@ const MaintenanceProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     }
 
     const saveMaintenance = (maintenance: IMaintenance, userId: string) => {
-        setMaintenances([...maintenances, { ...maintenance, id: uuidv4(), userId: userId }])
+        setMaintenances([...maintenances, { ...maintenance, id: uuidv4(), userId: userId, createdAt: Date() }])
     }
 
     const updateMaintenance = (maintenance: IMaintenance) => {

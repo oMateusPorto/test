@@ -21,6 +21,7 @@ export type UserContextType = {
 }
 
 export const UserContext = createContext<UserContextType | null>(null)
+UserContext.displayName = 'User'
 
 const UserProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
 
