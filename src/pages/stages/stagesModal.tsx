@@ -1,62 +1,89 @@
-import { useContext } from "react";
 import { Modal } from "react-bootstrap";
+import { useContext } from "react";
 import { IStage, StageContext, StageContextType } from "../../contexts/stageContext";
 
-export default function StagesModal(props:any) {
-  
-  const { stage, setStage, updateStages, updateStatusStage } = useContext(StageContext) as StageContextType
+export default function StagesModal(props: any) {
 
-  function handleInput(e: React.ChangeEvent<HTMLInputElement>){
-    const { name, value } = e.target
-    setStage({...stage, value: {...stage.value, [name]: value}})
-  }
+    const {
+        setStage,
+        stage,
+        initialStage,
+        updateStages,
+    } = useContext(StageContext) as StageContextType
 
-  function handleFormStage (e: any, stage: IStage){
-    e.preventDefault()
-    updateStages(stage)
-    props.togleShowMaintenanceModal()
-  }
+    function handleSaveModalStage(stage: IStage) {
+        updateStages({ ...stage, status: true, createdAt: new Date().toLocaleDateString() })
+        props.togleShowMaintenanceModal()
+        setStage(initialStage)
+    }
 
-  function saveStageComplete (e: any, stage:IStage){
-    e.preventDefault()
-    props.updateStatusMaintenance(stage.maintenanceId)
-    updateStatusStage(stage) 
-    props.togleShowMaintenanceModal()
-  }
+    function handleHideModal() {
+        props.togleShowMaintenanceModal()
+        setStage(initialStage)
+    }
 
-  return (
-    <div>
-      <Modal show={props.showMaintenanceModal} onHide={props.handleCancelStageModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>{stage.description}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div>
-            <h6>Etapas de Manutenção</h6>
-            <form className="row g-3">
-              <div className="col-md-12">
-                <label className="form-label">Etapa 1 - Texto</label>
-                <input type="text" className="form-control" name="text" id="text" value={stage.value.text} onChange={handleInput} disabled={false}/>
-              </div>
-              <div className="col-md-12">
-                <label className="form-label">Etapa 2 - Número</label>
-                <input type="number" className="form-control" name="number" id="number" value={stage.value.number} onChange={handleInput} disabled={false}/>
-              </div>
-              <div className="col-md-12">
-                <label className="form-label">Etapa 3 - Arquivo</label>
-                <input type="text" className="form-control" name="file" id="file" value={stage.value.file} onChange={handleInput} disabled={false}/>
-              </div>
-            </form>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          { stage.value.file ?
-            <button type="submit" className="btn btn-success" disabled={false} onClick={(e) => {saveStageComplete(e, stage)}} >Finalizar</button>
-            :
-            <button type="submit" className="btn btn-success" disabled={false} onClick={(e) => handleFormStage(e, stage)} >Salvar</button>
-          }
-        </Modal.Footer>
-      </Modal>
-    </div>
-  )
-} 
+    function typeOfStage(number: Number) {
+        switch (number) {
+            case 1:
+                return 'Etapa de texto'
+            case 2:
+                return 'Etapa de número'
+            case 3:
+                return 'Etapa de arquivo'
+            default:
+                return ''
+        }
+    }
+
+    function typeOfInput(number: Number) {
+        switch (number) {
+            case 1:
+                return 'text'
+            case 2:
+                return 'number'
+            case 3:
+                return 'file'
+            default:
+                return ''
+        }
+    }
+
+    return (
+        <Modal show={props.showMaintenanceModal} onHide={handleHideModal}>
+            <Modal.Header closeButton>
+                <Modal.Title>{typeOfStage(stage.type)}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <form>
+                    <div className="mb-3">
+                        <label className="form-label">Descrição</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            value={stage.description}
+                            onChange={(e) => setStage({ ...stage, description: e.target.value })} />
+                    </div>
+                    <div className="mb-3">
+                        <label className="form-label">Valor</label>
+                        <input
+                            type={typeOfInput(stage.type)}
+                            className="form-control"
+                            value={stage.value}
+                            onChange={(e) => setStage({ ...stage, value: e.target.value })} />
+                    </div>
+                </form>
+            </Modal.Body>
+            <Modal.Footer>
+                <button
+                    type="submit"
+                    className="btn btn-success"
+                    disabled={stage.description.length > 0 && stage.value ? false : true}
+                    onClick={() => handleSaveModalStage(stage)}
+                >
+                    Salvar
+                </button>
+            </Modal.Footer>
+        </Modal>
+    )
+
+}

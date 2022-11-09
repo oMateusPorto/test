@@ -25,7 +25,8 @@ export type MaintenanceContextType = {
     maintenance: IMaintenance,
     getMaintenance: (id: string) => void,
     setMaintenance: (maintenance: IMaintenance) => void,
-    initialMaintenance: IMaintenance
+    initialMaintenance: IMaintenance,
+    updateStatusMaintenance: (id: string) => void
 }
 
 export const MaintenanceContext = createContext<MaintenanceContextType | null>(null)
@@ -42,7 +43,12 @@ const MaintenanceProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     }
 
     const saveMaintenance = (maintenance: IMaintenance, userId: string) => {
-        setMaintenances([...maintenances, { ...maintenance, id: uuidv4(), userId: userId, createdAt: Date() }])
+        setMaintenances([...maintenances, {
+            ...maintenance,
+            id: uuidv4(),
+            userId: userId,
+            createdAt: new Date().toLocaleDateString()
+        }])
     }
 
     const updateMaintenance = (maintenance: IMaintenance) => {
@@ -54,6 +60,12 @@ const MaintenanceProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
         setMaintenances(filteredMaintenance)
     }
 
+    const updateStatusMaintenance = (id: string) => {
+        const item = maintenances.filter(item => item.id === id)
+        const a = { ...item[0], status: true }
+        updateMaintenance(a)
+      }
+
     return <MaintenanceContext.Provider value={{
         maintenances,
         saveMaintenance,
@@ -62,7 +74,8 @@ const MaintenanceProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
         maintenance,
         getMaintenance,
         setMaintenance,
-        initialMaintenance
+        initialMaintenance,
+        updateStatusMaintenance
     }}>
         {children}
     </MaintenanceContext.Provider>

@@ -18,7 +18,7 @@ export const initialStage = {
     status: false,
     type: 0,
     value: '',
-    createdAt: Date()
+    createdAt: ''
 }
 
 export type StageContextType = {
@@ -26,11 +26,15 @@ export type StageContextType = {
     stages: IStage[],
     setStage: (stage: IStage) => void,
     initialStage: IStage,
-    newStage: (id: string) => void,
+    newStage: (id: string, n: number) => void,
     updateStages: (stage: IStage) => void,
     updateStatusStage: (stage: IStage) => void,
     openStage: (id: string) => void,
-    stagesOfMaintenance: IStage[]
+    stagesOfMaintenance: IStage[],
+    getStage: (id: string) => void,
+    getMaintenanceId: (id: string, status: boolean) => void
+    maintenanceId: {id: string, status: boolean},
+    deleteStages: (id: string) => void
 }
 
 export const StageContext = createContext<StageContextType | null>(null)
@@ -41,18 +45,26 @@ const StageProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     const [stages, setStages] = useState<IStage[]>([])
     const [stage, setStage] = useState(initialStage)
     const [stagesOfMaintenance, setStagesOfMaintenance] = useState<IStage[]>([])
+    const [maintenanceId, setMaintenanceId] = useState({id: '', status: false })
 
     const openStage = (id: string) => {
         const item = stages.filter(item => item.maintenanceId === id)
         setStagesOfMaintenance(item)
     }
 
-    const newStage = (id: string) => {
-        const newStage:IStage[] = []
-        for(var i = 1; i <= 3; i++){
-            newStage.push({...stage, id: uuidv4(), maintenanceId: id, type: i})  
-        }
-        setStages([...stages, newStage[0], newStage[1], newStage[2]])
+    const newStage = (id: string, n: number) => {
+        const item =  {...stage, id: uuidv4(), maintenanceId: id, type: n }
+        setStage(item)
+        setStages([...stages, item])
+    }
+
+    const getMaintenanceId = (id: string, status: boolean) => {
+        setMaintenanceId({id:id, status:status})
+    }
+
+    const getStage = (id: string) => {
+        const item = stages.filter(item => item.id === id)
+        setStage(item[0])
     }
 
     const updateStages = (stage: IStage) => {
@@ -64,6 +76,11 @@ const StageProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
         updateStages(up)
     }
 
+    const deleteStages = (id: string) => {
+        const filterdStages = stages.filter(i => i.maintenanceId !== id)
+        setStages(filterdStages)
+    }
+
     return <StageContext.Provider value={{
         stages,
         stage,
@@ -73,7 +90,11 @@ const StageProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
         updateStages,
         updateStatusStage,
         openStage,
-        stagesOfMaintenance
+        stagesOfMaintenance,
+        getStage,
+        getMaintenanceId,
+        maintenanceId,
+        deleteStages
     }}>
         {children}
     </StageContext.Provider>
